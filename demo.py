@@ -159,20 +159,34 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
 
 def usage():
     print('Print a demo page')
-    print(f'    {sys.argv[0]} id_vendor id_product')
-    print('Values should be in hexadecimal. Example for Epson LX-300+II:')
-    print(f'    {sys.argv[0]} 0x04b8 0x0005')
+    print(f'{sys.argv[0]} connector pins [id_vendor] [id_product]')
+    print('    connector: usb')
+    print('    pins: 9, 24, 48')
+    print('    id_vendor: Vendor identifier (USB)')
+    print('    id_product: Product identifier (USB)')
+    print('Values id_vendor and id_product should be in hexadecimal. Example for Epson LX-300+II:')
+    print(f'{sys.argv[0]} usb 9 0x04b8 0x0005')
 
 
 if __name__ == '__main__':
     try:
-        id_vendor = int(sys.argv[1], 16)
-        id_product = int(sys.argv[2], 16)
+        connector = sys.argv[1]
+        if connector != 'usb':
+            raise ValueError()
+        pins = int(sys.argv[2])
+        if pins not in [9, 24, 48]:
+            raise ValueError()
+        id_vendor = int(sys.argv[3], 16)
+        id_product = int(sys.argv[4], 16)
     except Exception:
         usage()
         exit(1)
 
-    printer = escp.UsbPrinter(id_vendor=id_vendor, id_product=id_product)
-    debug = escp.DebugPrinter()
-    commands = escp.Commands_9_Pin()
-    print_test_page([printer, debug], commands)
+    try:
+        printer = escp.UsbPrinter(id_vendor=id_vendor, id_product=id_product)
+        debug = escp.DebugPrinter()
+        commands = escp.lookup_by_pins(pins)
+        print_test_page([printer, debug], commands)
+    except escp.PrinterNotFound as e:
+        print(f'Printer not found: {e}', file=sys.stderr)
+        exit(1)
