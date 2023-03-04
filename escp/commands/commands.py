@@ -4,6 +4,10 @@ from abc import ABC
 from .parameters import Margin, PageLengthUnit, Typeface
 
 
+def int_to_bytes(value: int) -> bytes:
+    return int.to_bytes(value, length=1, byteorder='big', signed=False)
+
+
 class Commands(ABC):
 
     cmds = {
@@ -62,7 +66,7 @@ class Commands(ABC):
         return self._append_cmd(f'character_width_{width}')
 
     def typeface(self, tf: Typeface) -> Self:
-        return self._append_cmd('typeface', bytes(tf.value))
+        return self._append_cmd('typeface', int_to_bytes(tf.value))
 
     def margin(self, margin: Margin, value: int) -> Self:
         """Set a margin.
@@ -78,7 +82,7 @@ class Commands(ABC):
         """
         if value < 0 or value > 255:
             raise ValueError(f'Invalid margin value: ${value}')
-        return self._append_cmd(f'margin_{margin.name.lower()}', bytes(value))
+        return self._append_cmd(f'margin_{margin.name.lower()}', int_to_bytes(value))
 
     def line_spacing(self, numerator: int, denominator: int) -> Self:
         """Set line spacing.
@@ -103,11 +107,10 @@ class Commands(ABC):
         return self._append_cmd(cmd, bytes(value))
 
     def double_character_width(self, enabled: bool) -> Self:
-        int.to_bytes(1)
-        return self._append_cmd('double_character_width', int.to_bytes(1) if enabled else int.to_bytes(0))
+        return self._append_cmd('double_character_width', int_to_bytes(1) if enabled else int_to_bytes(0))
 
     def double_character_height(self, enabled: bool) -> Self:
-        return self._append_cmd('double_character_height', int.to_bytes(1) if enabled else int.to_bytes(0))
+        return self._append_cmd('double_character_height', int_to_bytes(1) if enabled else int_to_bytes(0))
 
     def extra_space(self, value: int) -> Self:
         """Add extra space between characters.
@@ -116,7 +119,7 @@ class Commands(ABC):
         """
         if value < 0 or value > 255:
             raise ValueError(f'Invalid extra space value: ${value}')
-        return self._append_cmd('extra_space', value.to_bytes(1))
+        return self._append_cmd('extra_space', int_to_bytes(value))
 
     def condensed(self, enabled: bool) -> Self:
         """Select condensed printing.
