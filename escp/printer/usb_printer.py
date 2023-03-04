@@ -4,9 +4,11 @@ import usb.core
 import usb.util
 
 from .printer import Printer
+from .exceptions import PrinterNotFound
 
 
 class UsbPrinter(Printer):
+    # Reference printer Epson LX-300+II
     # ID_VENDOR = 0x04b8
     # ID_PRODUCT = 0x0005
 
@@ -23,6 +25,8 @@ class UsbPrinter(Printer):
         print(devices)
 
         self.device: usb.core.Device = usb.core.find(idVendor=self.id_vendor, idProduct=self.id_product)
+        if not self.device:
+            raise PrinterNotFound(f'id_vendor={id_vendor} id_product={id_product}')
         print(self.device)
         # TODO Check is printer
 
