@@ -1,2 +1,10 @@
 venv
 __pycache__
+
+# packaging and testing
+*.egg-info/
+.eggs/
+*.egg
+build/
+dist/
+.pytest_cache/
