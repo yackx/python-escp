@@ -69,9 +69,11 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
     # Typeface
     cmd.text('Typeface').cr_lf()
     cmd.text('Roman').cr_lf()
-    cmd.typeface(escp.Typeface.ROMAN).text('    ').text(fox()).cr_lf()
+    cmd.typeface(escp.Typeface.ROMAN)
+    cmd.text('    ').text(fox()).cr_lf()
+    cmd.typeface(escp.Typeface.SANS_SERIF)
     cmd.text('Sans Serif').cr_lf()
-    cmd.typeface(escp.Typeface.SANS_SERIF).text('    ').text(fox()).cr_lf()
+    cmd.text('    ').text(fox()).cr_lf()
     cmd.cr_lf()
     print_and_reset()
 
@@ -87,31 +89,32 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
 
     # Character size
     cmd.text('Character size').cr_lf()
-    cmd.double_character_width(True).text('Double character width').double_character_width(False).cr_lf()
-    cmd.double_character_height(True).text('Double character height').double_character_height(False).cr_lf()
+    cmd.double_character_width(True).text('Double character width').double_character_width(False).cr_lf(2)
+    cmd.double_character_height(True).text('Double character height').double_character_height(False).cr_lf(2)
     cmd \
         .double_character_width(True) \
         .double_character_height(True) \
         .text('Double character width and height') \
         .double_character_width(False) \
         .double_character_height(False) \
-        .cr_lf()
+        .cr_lf(2)
     print_and_reset()
 
     # Character spacing
     cmd.text('Extra space between characters').cr_lf()
     for extra_space in [1, 5, 10]:
         cmd \
-            .text(f'({extra_space}/120")') \
+            .text(f'{extra_space}/120"') \
             .cr_lf() \
             .extra_space(extra_space) \
             .text(fox()) \
             .cr_lf()
         print_and_reset()
+    cmd.cr_lf()
 
     # Condensed
     cmd.text('Condensed text').cr_lf()
-    cmd.condensed(True).text(fox()).condensed(False).cr_lf(2)
+    cmd.condensed(True).text(fox()).text('. ').text(fox()).condensed(False).cr_lf(2)
     print_and_reset()
 
     # Line spacing
