@@ -28,7 +28,10 @@ Missing driver can be worked around by using a generic 9-pin or 24-pin generic d
 - **ESC/P2** is a more recent variant of ESC/P by Epson. Backward compatible with ESC/P. Not supported. Switch to ESC/P but some features won't be available.
 - **ESC/POS** is a variant for controlling receipt printers as commonly used at the point of sale (POS). Often thermal printers. Not supported and out of scope. Use the comprehensive https://github.com/python-escpos/python-escpos[python-escpos] library instead.
 
-https://en.wikipedia.org/wiki/ESC/P[Wikipedia]
+References
+
+- https://files.support.epson.com/pdf/general/escp2ref.pdf[Epson reference manual (dec. 1997)]
+- https://en.wikipedia.org/wiki/ESC/P[Wikipedia]
 
 ## Status
 
