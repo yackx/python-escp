@@ -8,7 +8,9 @@ There is **no driver** available for your printer, or there is one but it is **s
 
 Missing driver can be worked around by using a generic 9-pin or 24-pin generic driver. To get the highest quality, this library focuses on **text mode** printing, leveraging device fonts (built-in fonts), as opposed to modern drivers that rely on graphics.
 
-## ESC/P, ESC/P2, ESC/POS
+## Features
+
+### ESC/P, ESC/P2, ESC/POS
 
 [cols="1,1"]
 |===
@@ -20,7 +22,7 @@ Missing driver can be worked around by using a generic 9-pin or 24-pin generic d
 |ESC/P2
 |✗
 
-|ESCP/POS
+|ESC/POS
 |✗
 |===
 
@@ -33,9 +35,9 @@ References
 - https://files.support.epson.com/pdf/general/escp2ref.pdf[Epson reference manual (dec. 1997)]
 - https://en.wikipedia.org/wiki/ESC/P[Wikipedia]
 
-## Status
+### Printers
 
-Tested on a 9-pin target reference printer: **Epson LX-300+II**
+Tested on a 9-pin reference printer: **Epson LX-300+II**
 
 [cols="1,1"]
 |===
@@ -47,6 +49,27 @@ Tested on a 9-pin target reference printer: **Epson LX-300+II**
 |24/48-pin
 |Work in progress – Text mode – Not tested
 |===
+
+### Connectivity
+
+[cols="1,1"]
+|===
+|Connector |Status
+
+|USB
+|✓
+
+|Serial
+|✗
+
+|Parallel
+|✗
+
+|File
+|✓
+|===
+
+Although serial and parallel ports are not supported, you can output the printer commands to a file and send it in raw mode to the printer using `lpr`.
 
 ## Credits
 
