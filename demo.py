@@ -30,14 +30,32 @@ def sep_line(count=20) -> bytes:
 
 
 def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
-    def print_and_clear_buffer():
+    def print_and_reset(prepare_next_sequence=True):
+        # init printer + clear command buffer
         for printer in printers:
             printer.send(cmd.buffer)
-        cmd.clear()
 
-    cmd.text(fox()).cr_lf(2)
-    print_and_clear_buffer()
+        if prepare_next_sequence:
+            cmd.clear().init().draft(False).typeface(escp.Typeface.SANS_SERIF)
 
+    # Init
+    print_and_reset()
+
+    # Hello
+    cmd.text('ESC/P direct printing test page').cr_lf(2)
+    print_and_reset()
+
+    # Text enhancement
+    cmd.text('Text enhancements').cr_lf()
+    cmd.text('Bold').cr_lf()
+    cmd.bold(True).text(fox()).bold(False).cr_lf()
+    cmd.text('Italic').cr_lf()
+    cmd.italic(True).text(fox()).italic(False).cr_lf()
+    cmd.cr_lf()
+    print_and_reset()
+
+    # Char width
+    cmd.text('Character width').cr_lf()
     for width in [10, 12, 15]:
         cmd \
             .text(f'1/{width} char width') \
@@ -45,23 +63,30 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
             .character_width(width) \
             .text(fox()) \
             .cr_lf()
-    print_and_clear_buffer()
+    cmd.cr_lf()
+    print_and_reset()
 
-    cmd.bold(True).text('Bold text').bold(False).cr_lf()
-    cmd.italic(True).text('Italic text').italic(False).cr_lf()
-    print_and_clear_buffer()
+    # Typeface
+    cmd.text('Typeface').cr_lf()
+    cmd.text('Roman').cr_lf()
+    cmd.typeface(escp.Typeface.ROMAN).text('    ').text(fox()).cr_lf()
+    cmd.text('Sans Serif').cr_lf()
+    cmd.typeface(escp.Typeface.SANS_SERIF).text('    ').text(fox()).cr_lf()
+    cmd.cr_lf()
+    print_and_reset()
 
-    cmd.typeface(escp.Typeface.ROMAN).text('Roman typeface').cr_lf().text(fox()).cr_lf()
-    cmd.typeface(escp.Typeface.SANS_SERIF).text('Sans-serif typeface').cr_lf().text(fox()).cr_lf()
-    print_and_clear_buffer()
-
+    # Margins (left)
+    cmd.text('Margins (left)')
     for margin in [0, 4, 8]:
         cmd \
             .margin(escp.Margin.LEFT, margin) \
-            .text(f'Left margin {margin}') \
+            .text(f'[x] text started at col {margin}') \
             .cr_lf()
-    print_and_clear_buffer()
+    cmd.cr_lf()
+    print_and_reset()
 
+    # Character size
+    cmd.text('Character size').cr_lf()
     cmd.double_character_width(True).text('Double character width').double_character_width(False).cr_lf()
     cmd.double_character_height(True).text('Double character height').double_character_height(False).cr_lf()
     cmd \
@@ -69,34 +94,39 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
         .double_character_height(True) \
         .text('Double character width and height') \
         .double_character_width(False) \
-        .double_character_height(False)
-    print_and_clear_buffer()
+        .double_character_height(False) \
+        .cr_lf()
+    print_and_reset()
 
+    # Character spacing
     cmd.text('Extra space between characters').cr_lf()
-    for extra_space in [10, 60, 120]:
+    for extra_space in [1, 5, 10]:
         cmd \
+            .text(f'({extra_space}/120")') \
+            .cr_lf() \
             .extra_space(extra_space) \
             .text(fox()) \
-            .text(f'    ({extra_space}/120")') \
             .cr_lf()
-    print_and_clear_buffer()
+        print_and_reset()
 
-    cmd.condensed(True).text('Condensed text').condensed(False).cr_lf()
-    print_and_clear_buffer()
+    # Condensed
+    cmd.text('Condensed text')
+    cmd.condensed(True).text(fox()).condensed(False).cr_lf(2)
+    print_and_reset()
 
+    # Line spacing
     cmd \
-        .text('Line spacing') \
-        .cr_lf() \
-        .text('Line spacing (not specified)') \
-        .cr_lf() \
+        .text('Line spacing').cr_lf() \
+        .text('(not specified)').cr_lf() \
+        .text(fox()).cr_lf().text(fox()).cr_lf() \
+        .text('1/8').cr_lf() \
         .line_spacing(1, 8) \
-        .text('Line spacing 1/8"') \
-        .cr_lf() \
+        .text(fox()).cr_lf().text(fox()).cr_lf() \
+        .text('1/6').cr_lf() \
         .line_spacing(1, 6) \
-        .text('Line spacing 1/6"') \
-        .cr_lf() \
-        .line_spacing(1, 8)
-    print_and_clear_buffer()
+        .text(fox()).cr_lf().text(fox()).cr_lf() \
+        .cr_lf()
+    print_and_reset()
 
     for printer in printers:
         printer.close()
