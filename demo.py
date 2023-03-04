@@ -110,7 +110,7 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
         print_and_reset()
 
     # Condensed
-    cmd.text('Condensed text')
+    cmd.text('Condensed text').cr_lf()
     cmd.condensed(True).text(fox()).condensed(False).cr_lf(2)
     print_and_reset()
 
@@ -126,6 +126,11 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
         .line_spacing(1, 6) \
         .text(fox()).cr_lf().text(fox()).cr_lf() \
         .cr_lf()
+    print_and_reset()
+
+    # Proportional
+    cmd.text('Proportional text').cr_lf()
+    cmd.proportional(True).text(lorem()).proportional(False).cr_lf(2)
     print_and_reset()
 
     for printer in printers:

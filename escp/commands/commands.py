@@ -33,6 +33,7 @@ class Commands(ABC):
         'condensed_off': b'\x1b\x12',
         'line_spacing_1_6': b'\x1b2',
         'line_spacing_1_8': b'\x1b0',
+        'proportional': b'\x1bp',
     }
 
     _buffer: bytes
@@ -131,6 +132,14 @@ class Commands(ABC):
         1/20 inch if 12-cpi selected
         """
         return self._append_cmd('condensed_on' if enabled else 'condensed_off')
+
+    def proportional(self, enabled: bool) -> Self:
+        """Select proportional printing.
+
+        - Changes made to fixed-pitch printing are not effective until proportional printing is turned off.
+        - Condensed printing is not effective when proportional printing is turned on.
+        """
+        return self._append_cmd('proportional', int_to_bytes(1) if enabled else int_to_bytes(0))
 
     def _append(self, b: bytes) -> Self:
         self._buffer += b
