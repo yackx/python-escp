@@ -138,6 +138,10 @@ class Commands(ABC):
 
         - Changes made to fixed-pitch printing are not effective until proportional printing is turned off.
         - Condensed printing is not effective when proportional printing is turned on.
+
+        Printers not featuring this command:
+        ActionPrinter Apex 80, ActionPrinter T-1000, ActionPrinter 2000, LX-400, LX-800, LX-810,
+        LX-850, LX-1050
         """
         return self._append_cmd('proportional', int_to_bytes(1) if enabled else int_to_bytes(0))
 
