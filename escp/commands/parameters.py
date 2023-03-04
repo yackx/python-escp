@@ -16,3 +16,10 @@ class Margin(Enum):
 class PageLengthUnit(Enum):
     LINES = 0
     INCHES = 1
+
+
+class Justification(Enum):
+    LEFT = 0
+    CENTER = 1
+    RIGHT = 2
+    FULL = 3

@@ -1,7 +1,7 @@
 from typing import Self
 from abc import ABC
 
-from .parameters import Margin, PageLengthUnit, Typeface
+from .parameters import Margin, PageLengthUnit, Typeface, Justification
 
 
 def int_to_bytes(value: int) -> bytes:
@@ -34,6 +34,7 @@ class Commands(ABC):
         'line_spacing_1_6': b'\x1b2',
         'line_spacing_1_8': b'\x1b0',
         'proportional': b'\x1bp',
+        'justify': b'\x1ba',
     }
 
     _buffer: bytes
@@ -144,6 +145,20 @@ class Commands(ABC):
         LX-850, LX-1050
         """
         return self._append_cmd('proportional', int_to_bytes(1) if enabled else int_to_bytes(0))
+
+    def justify(self, justification: Justification) -> Self:
+        """Set justification.
+
+        - This is a non-recommended command as per Epson documentation,
+          although no explanation is given.
+        - Always set justification at the beginning of a line.
+        - The printer performs full justification only if the width of the current line is greater than
+          75% of the printing area width. If the line width is less than 75%, the printer left-justifies text.
+        - You should not use commands that adjust the horizontal print position during full justification.
+        - Justification is based on the font selected when the justification command is sent.
+          Changing the font after setting justification can cause unpredictable results.
+        """
+        return self._append_cmd('justify', int_to_bytes(justification.value))
 
     def _append(self, b: bytes) -> Self:
         self._buffer += b

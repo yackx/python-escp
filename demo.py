@@ -136,6 +136,23 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
     cmd.proportional(True).text(lorem()).proportional(False).cr_lf(2)
     print_and_reset()
 
+    # Justification
+    cmd.text('Justification (with proportional)').cr_lf()
+    cmd.proportional(True)
+    cmd.justify(escp.Justification.LEFT).text(fox()).cr_lf()
+    cmd.justify(escp.Justification.CENTER).text(fox()).cr_lf()
+    cmd.justify(escp.Justification.RIGHT).text(fox()).cr_lf(2)
+    print_and_reset()
+
+    cmd.proportional(True)
+    cmd.justify(escp.Justification.CENTER).text(lorem()).cr_lf(2)
+    print_and_reset()
+
+    cmd.proportional(True)
+    cmd.justify(escp.Justification.FULL).text(lorem()).cr_lf(2)
+    cmd.proportional(False)
+    print_and_reset(prepare_next_sequence=False)
+
     for printer in printers:
         printer.close()
 
