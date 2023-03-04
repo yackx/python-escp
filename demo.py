@@ -104,6 +104,6 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
 
 if __name__ == '__main__':
     printer = escp.UsbPrinter(id_vendor=sys.argv[1], id_product=sys.argv[2])
-    debug = escp.DebugPrinter(printer)
+    debug = escp.DebugPrinter()
     commands = escp.Commands_9_Pin()
     print_test_page([printer, debug], commands)
