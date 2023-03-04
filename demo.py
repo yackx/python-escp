@@ -102,8 +102,22 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
         printer.close()
 
 
+def usage():
+    print('Print a demo page')
+    print(f'    {sys.argv[0]} id_vendor id_product')
+    print('Values should be in hexadecimal. Example for Epson LX-300+II:')
+    print(f'    {sys.argv[0]} 0x04b8 0x0005')
+
+
 if __name__ == '__main__':
-    printer = escp.UsbPrinter(id_vendor=sys.argv[1], id_product=sys.argv[2])
+    try:
+        id_vendor = int(sys.argv[1], 16)
+        id_product = int(sys.argv[2], 16)
+    except Exception:
+        usage()
+        exit(1)
+
+    printer = escp.UsbPrinter(id_vendor=id_vendor, id_product=id_product)
     debug = escp.DebugPrinter()
     commands = escp.Commands_9_Pin()
     print_test_page([printer, debug], commands)
