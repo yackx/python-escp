@@ -62,6 +62,8 @@ def print_test_page(printers: [Printer], cmd: Commands):
     cmd.italic(True).text(fox()).italic(False).cr_lf()
     cmd.text('Double strike').cr_lf()
     cmd.double_strike(True).text(fox()).double_strike(False).cr_lf()
+    cmd.text('Underline').cr_lf()
+    cmd.underline(True).text(fox()).underline(False).cr_lf()
     cmd.cr_lf()
     _print_and_reset()
 
