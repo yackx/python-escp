@@ -160,6 +160,9 @@ def print_test_page(printers: [Printer], cmd: Commands):
     cmd.proportional(True)
     cmd.justify(Justification.FULL).text(lorem()).cr_lf(2)
     cmd.proportional(False)
+    _print_and_reset()
+
+    cmd.form_feed()
     _print_and_reset(prepare_next_sequence=False)
 
     for printer in printers:
@@ -188,8 +191,11 @@ Look'd up in perfect silence at the stars
         .bold(True).text('When I heard the learn\'d astronomer').bold(False).cr_lf(2) \
         .italic(True).text('by Walt Whitman').italic(False).cr_lf(2) \
         .text(text) \
-        .linefeed()
+        .form_feed()
     _print_and_reset()
+
+    for printer in printers:
+        printer.close()
 
 
 def usage():

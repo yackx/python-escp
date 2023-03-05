@@ -35,6 +35,7 @@ class Commands(ABC):
         'line_spacing_1_8': b'\x1b0',
         'proportional': b'\x1bp',
         'justify': b'\x1ba',
+        'form_feed': b'\x0c',
     }
 
     _buffer: bytes
@@ -159,6 +160,9 @@ class Commands(ABC):
           Changing the font after setting justification can cause unpredictable results.
         """
         return self._append_cmd('justify', int_to_bytes(justification.value))
+
+    def form_feed(self) -> Self:
+        return self._append_cmd('form_feed')
 
     def _append(self, b: bytes) -> Self:
         self._buffer += b
