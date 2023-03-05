@@ -1,12 +1,37 @@
 # escp
 
-**A Python library to drive ESC/P printers.**
+**A Python library to drive ESC/P printers**
 
 ## Motivation
 
 There is **no driver** available for your printer, or there is one but it is **slow** and the **print quality is mediocre**.
 
 Missing driver can be worked around by using a generic 9-pin or 24-pin generic driver. To get the highest quality, this library focuses on **text mode** printing, leveraging device fonts (built-in fonts), as opposed to modern drivers that rely on graphics.
+
+## Installation
+
+```bash
+pip install escp
+```
+
+## Use
+
+Only USB is supported for now. You can find the `id_vendor` and `id_product` values using `lsusb`.
+
+```python
+import escp
+
+# Create a printer instance (Espon LX-300+II)
+printer = escp.UsbPrinter(id_vendor=0x04b8, id_product=0x0005)
+# Obtain commands for 9-pin printer
+commands = escp.lookup_by_pins(9)
+# Prepare the buffer to print a short text
+commands.init().text('ESC/P direct printing test page').cr_lf(2)
+# Printer go brrrrrr
+printer.send(commands.buffer)
+```
+
+See  [demo](demo.py) for a more complete example.
 
 ## Features
 
@@ -29,7 +54,7 @@ References
 
 ### Printers
 
-Tested on a 9-pin reference printer: **Epson LX-300+II**
+Tested on a 9-pin reference printer: **Epson LX-300+II**. All 9-pin printers should work, with minor hardware limitations on some commands. 24/48-pin printers are implemented bt not tested. The differences between 9-pin and 24/48 pin are minor.
 
 | Type       | Status                                    |
 |------------|-------------------------------------------|
@@ -46,12 +71,6 @@ Tested on a 9-pin reference printer: **Epson LX-300+II**
 | File      | ✓      |
 
 Although serial and parallel ports are not supported, you can output the printer commands to a file and send it in raw mode to the printer using `lpr`.
-
-## Usage
-
-TBD
-
-See demo
 
 ## Credits
 
