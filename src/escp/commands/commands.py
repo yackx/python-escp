@@ -31,6 +31,9 @@ class Commands(ABC):
         'subscript_on': b'\x1bS\x01',
         'superscript_off': b'\x1bT',
         'subscript_off': b'\x1bT',
+        'upper_control_codes_printing_on': b'\x1b\x36',
+        'upper_control_codes_printing_off': b'\x1b\x37',
+        'control_codes_printing': b'\x1b\x49',
         'typeface': b'\x1bk',
         'margin_left': b'\x1bl',
         'margin_right': b'\x1bQ',
@@ -109,6 +112,22 @@ class Commands(ABC):
         Prints characters that follow at about 2/3 their normal height
         """
         return self._append_cmd('subscript_on' if enabled else 'subscript_off')
+
+    def upper_control_codes_printing(self, enabled: bool) -> T:
+        """Enable or disable printing of upper control codes.
+
+        If enabled, tells the printer to treat codes from 128 to 159
+        as printable characters instead of control code.
+        """
+        return self._append_cmd('upper_control_codes_printing_on' if enabled else 'upper_control_codes_printing_off')
+
+    def control_codes_printing(self, enabled: bool) -> T:
+        """Enable or disable printing of control codes.
+
+        If enabled, tells the printer to treat codes 0–6, 16, 17, 21–23, 25, 26, 28–31, and 128–159 as
+        printable character instead of control code.
+        """
+        return self._append_cmd('control_codes_printing', int_to_bytes(1 if enabled else 0))
 
     def typeface(self, tf: Typeface) -> T:
         return self._append_cmd('typeface', int_to_bytes(tf.value))

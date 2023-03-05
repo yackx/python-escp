@@ -173,6 +173,19 @@ def print_test_page(printers: [Printer], cmd: Commands):
     cmd.proportional(False)
     _print_and_reset()
 
+    # Printable control codes
+    cmd.text('Printable control codes - upper control codes').cr_lf()
+    for i in range(128, 160):
+        cmd \
+            .text(str(i)) \
+            .text(' ') \
+            .upper_control_codes_printing(True) \
+            .text(chr(i)) \
+            .upper_control_codes_printing(False) \
+            .text('   ')
+    cmd.cr_lf()
+    _print_and_reset()
+
     cmd.form_feed()
     _print_and_reset(prepare_next_sequence=False)
 
