@@ -48,8 +48,3 @@ class Commands_24_48_Pin(Commands):
                 return self._append_cmd('line_spacing_n_360', int_to_bytes(n))
             case _:
                 raise ValueError(f'Invalid line spacing: {numerator}/{denominator}')
-
-    def scoring(self) -> Self:
-        """Enable scoring."""
-        # Individual Command Explanations C-127
-        raise NotImplementedError()

@@ -221,3 +221,8 @@ class Commands(ABC):
     @property
     def buffer(self) -> bytes:
         return self._buffer
+
+
+# Not implemented and reserved to 24/48 pin printers
+# Outline + shadow (C-133)
+# Scoring (C-127)
