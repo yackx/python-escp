@@ -8,6 +8,8 @@ There is **no driver** available for your printer, or there is one but it is **s
 
 Missing driver can be worked around by using a generic 9-pin or 24-pin generic driver. To get the highest quality, this library focuses on **text mode** printing, leveraging device fonts (built-in fonts), as opposed to modern drivers that rely on graphics.
 
+![Printing sample on a 9-pin Epson LX-300+II](escp.jpg)
+
 ## Installation
 
 ```bash
