@@ -32,7 +32,7 @@ class Commands_24_48_Pin(Commands):
         """
         return super().extra_space(value)
 
-    def line_spacing(self, numerator: int, denominator: int) -> 'Commands':
+    def line_spacing(self, numerator: int, denominator: int) -> Self:
         """Set line spacing.
 
         Changing the line spacing after the page length does not affect the page length.
