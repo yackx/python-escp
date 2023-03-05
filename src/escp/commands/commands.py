@@ -27,6 +27,10 @@ class Commands(ABC):
         'double_strike_off': b'\x1bH',
         'underline_on': b'\x1b-\x01',
         'underline_off': b'\x1b-\x00',
+        'superscript_on': b'\x1bS\x00',
+        'subscript_on': b'\x1bS\x01',
+        'superscript_off': b'\x1bT',
+        'subscript_off': b'\x1bT',
         'typeface': b'\x1bk',
         'margin_left': b'\x1bl',
         'margin_right': b'\x1bQ',
@@ -90,6 +94,20 @@ class Commands(ABC):
         if width not in (10, 12, 15):
             raise ValueError(f'Invalid char width: ${width}')
         return self._append_cmd(f'character_width_{width}')
+
+    def superscript(self, enabled: bool) -> T:
+        """Prints characters in superscript mode.
+
+        Prints characters that follow at about 2/3 their normal height
+        """
+        return self._append_cmd('superscript_on' if enabled else 'superscript_off')
+
+    def subscript(self, enabled: bool) -> T:
+        """Prints characters in subscript mode.
+
+        Prints characters that follow at about 2/3 their normal height
+        """
+        return self._append_cmd('subscript_on' if enabled else 'subscript_off')
 
     def typeface(self, tf: Typeface) -> T:
         return self._append_cmd('typeface', int_to_bytes(tf.value))

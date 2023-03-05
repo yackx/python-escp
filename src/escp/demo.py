@@ -79,6 +79,13 @@ def print_test_page(printers: [Printer], cmd: Commands):
     cmd.cr_lf()
     _print_and_reset()
 
+    # Super/subscript
+    cmd.text('Superscript').cr_lf()
+    cmd.text('Some reference').superscript(True).text('[1]').superscript(False).cr_lf()
+    cmd.text('Water is H').subscript(True).text('2').subscript(False).text('O').cr_lf()
+    cmd.cr_lf()
+    _print_and_reset()
+
     # Typeface
     cmd.text('Typeface').cr_lf()
     cmd.text('Roman').cr_lf()
