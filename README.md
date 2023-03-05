@@ -20,6 +20,11 @@ pip install escp
 
 Only USB is supported for now. You can find the `id_vendor` and `id_product` values using `lsusb`.
 
+```bash
+$ lsusb | grep -i epson
+Bus 001 Device 004: ID 04b8:0005 Seiko Epson Corp. Printer
+```
+
 ```python
 import escp
 
