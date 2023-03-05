@@ -1,4 +1,4 @@
-from typing import Self
+from typing import TypeVar
 from abc import ABC
 
 from .parameters import Margin, PageLengthUnit, Typeface, Justification
@@ -6,6 +6,9 @@ from .parameters import Margin, PageLengthUnit, Typeface, Justification
 
 def int_to_bytes(value: int) -> bytes:
     return int.to_bytes(value, length=1, byteorder='big', signed=False)
+
+
+T = TypeVar('T', bound='Commands')
 
 
 class Commands(ABC):
@@ -50,35 +53,35 @@ class Commands(ABC):
     def _commands(self):
         return self.cmds
 
-    def init(self) -> Self:
+    def init(self) -> T:
         return self._append_cmd('init')
 
-    def draft(self, enabled: bool) -> Self:
+    def draft(self, enabled: bool) -> T:
         return self
 
-    def text(self, content: bytes | str) -> Self:
+    def text(self, content: bytes | str) -> T:
         if isinstance(content, str):
             content = bytes(content, 'utf-8')
         return self._append(content)
 
-    def cr_lf(self, how_many=1) -> Self:
+    def cr_lf(self, how_many=1) -> T:
         return self._append(self._commands()['cr_lf'] * how_many)
 
-    def bold(self, enabled: bool) -> Self:
+    def bold(self, enabled: bool) -> T:
         return self._append_cmd('bold_on' if enabled else 'bold_off')
 
-    def italic(self, enabled: bool) -> Self:
+    def italic(self, enabled: bool) -> T:
         return self._append_cmd('italic_on' if enabled else 'italic_off')
 
-    def double_strike(self, enabled: bool) -> Self:
+    def double_strike(self, enabled: bool) -> T:
         """Prints each dot twice, with the second slightly below the first, creating bolder characters."""
         return self._append_cmd('double_strike_on' if enabled else 'double_strike_off')
 
-    def underline(self, enabled: bool) -> Self:
+    def underline(self, enabled: bool) -> T:
         """Turns on/off printing of a line below all characters and spaces"""
         return self._append_cmd('underline_on' if enabled else 'underline_off')
 
-    def character_width(self, width: int) -> Self:
+    def character_width(self, width: int) -> T:
         """Select the character width. This may set the point as well.
 
         :param width: 10, 12 or 15.
@@ -88,10 +91,10 @@ class Commands(ABC):
             raise ValueError(f'Invalid char width: ${width}')
         return self._append_cmd(f'character_width_{width}')
 
-    def typeface(self, tf: Typeface) -> Self:
+    def typeface(self, tf: Typeface) -> T:
         return self._append_cmd('typeface', int_to_bytes(tf.value))
 
-    def margin(self, margin: Margin, value: int) -> Self:
+    def margin(self, margin: Margin, value: int) -> T:
         """Set a margin.
 
         The right margin value starts from the left margin.
@@ -107,7 +110,7 @@ class Commands(ABC):
             raise ValueError(f'Invalid margin value: ${value}')
         return self._append_cmd(f'margin_{margin.name.lower()}', int_to_bytes(value))
 
-    def line_spacing(self, numerator: int, denominator: int) -> Self:
+    def line_spacing(self, numerator: int, denominator: int) -> T:
         """Set line spacing.
 
         Changing the line spacing after the page length does not affect the page length.
@@ -115,7 +118,7 @@ class Commands(ABC):
         """
         raise NotImplementedError()
 
-    def page_length(self, value: int, unit: PageLengthUnit) -> Self:
+    def page_length(self, value: int, unit: PageLengthUnit) -> T:
         """Set page length.
 
         Always set the line spacing before the page length.
@@ -129,13 +132,13 @@ class Commands(ABC):
         cmd = 'page_length_in_inches' if unit == PageLengthUnit.INCHES else 'page_length_in_lines'
         return self._append_cmd(cmd, bytes(value))
 
-    def double_character_width(self, enabled: bool) -> Self:
+    def double_character_width(self, enabled: bool) -> T:
         return self._append_cmd('double_character_width', int_to_bytes(1) if enabled else int_to_bytes(0))
 
-    def double_character_height(self, enabled: bool) -> Self:
+    def double_character_height(self, enabled: bool) -> T:
         return self._append_cmd('double_character_height', int_to_bytes(1) if enabled else int_to_bytes(0))
 
-    def extra_space(self, value: int) -> Self:
+    def extra_space(self, value: int) -> T:
         """Add extra space between characters.
 
         The fraction of inch depends on the number of pins.
@@ -144,7 +147,7 @@ class Commands(ABC):
             raise ValueError(f'Invalid extra space value: ${value}')
         return self._append_cmd('extra_space', int_to_bytes(value))
 
-    def condensed(self, enabled: bool) -> Self:
+    def condensed(self, enabled: bool) -> T:
         """Select condensed printing.
 
         1/17 inch if 10-cpi selected,
@@ -152,7 +155,7 @@ class Commands(ABC):
         """
         return self._append_cmd('condensed_on' if enabled else 'condensed_off')
 
-    def proportional(self, enabled: bool) -> Self:
+    def proportional(self, enabled: bool) -> T:
         """Select proportional printing.
 
         - Changes made to fixed-pitch printing are not effective until proportional printing is turned off.
@@ -164,7 +167,7 @@ class Commands(ABC):
         """
         return self._append_cmd('proportional', int_to_bytes(1) if enabled else int_to_bytes(0))
 
-    def justify(self, justification: Justification) -> Self:
+    def justify(self, justification: Justification) -> T:
         """Set justification.
 
         - This is a non-recommended command as per Epson documentation,
@@ -178,14 +181,14 @@ class Commands(ABC):
         """
         return self._append_cmd('justify', int_to_bytes(justification.value))
 
-    def form_feed(self) -> Self:
+    def form_feed(self) -> T:
         return self._append_cmd('form_feed')
 
-    def _append(self, b: bytes) -> Self:
+    def _append(self, b: bytes) -> T:
         self._buffer += b
         return self
 
-    def _append_cmd(self, cmd: str, param: bytes = None) -> Self:
+    def _append_cmd(self, cmd: str, param: bytes = None) -> T:
         seq = self._commands()[cmd]
         if not seq:
             raise RuntimeError(f'No sequence found for {cmd}')
@@ -193,7 +196,7 @@ class Commands(ABC):
             seq += param
         return self._append(seq)
 
-    def clear(self) -> Self:
+    def clear(self) -> T:
         self._buffer = b''
         return self
 
