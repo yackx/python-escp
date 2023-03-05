@@ -67,6 +67,11 @@ class Commands(ABC):
         return self._append_cmd('italic_on' if enabled else 'italic_off')
 
     def character_width(self, width: int) -> Self:
+        """Select the character width. This may set the point as well.
+
+        :param width: 10, 12 or 15.
+        On non- 9-pin printers, the point is set to 10.5 as well.
+        """
         if width not in (10, 12, 15):
             raise ValueError(f'Invalid char width: ${width}')
         return self._append_cmd(f'character_width_{width}')
