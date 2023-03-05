@@ -252,3 +252,4 @@ class Commands(ABC):
 # Not implemented and reserved to 24/48 pin printers
 # Outline + shadow (C-133)
 # Scoring (C-127)
+# Control paper loading/ejecting (C-157)
