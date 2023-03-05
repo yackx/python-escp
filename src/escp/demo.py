@@ -1,6 +1,9 @@
 import sys
 
-import escp
+from src.escp import (
+    Printer, PrinterNotFound, UsbPrinter, DebugPrinter,
+    Commands, Typeface, Margin, Justification, lookup_by_pins,
+)
 
 
 def fox() -> bytes:
@@ -29,21 +32,27 @@ def sep_line(count=20) -> bytes:
     return b'-' * count
 
 
-def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
-    def print_and_reset(prepare_next_sequence=True):
-        # init printer + clear command buffer
-        for printer in printers:
-            printer.send(cmd.buffer)
+def print_and_reset(printers: [Printer], cmd: Commands, reset_sequence=None):
+    for printer in printers:
+        printer.send(cmd.buffer)
 
-        if prepare_next_sequence:
-            cmd.clear().init().draft(False).typeface(escp.Typeface.SANS_SERIF)
+    if reset_sequence:
+        reset_sequence()
+
+
+def print_test_page(printers: [Printer], cmd: Commands):
+    def _next_sequence():
+        cmd.clear().init().draft(False).typeface(Typeface.SANS_SERIF)
+
+    def _print_and_reset(prepare_next_sequence=True):
+        print_and_reset(printers, cmd, _next_sequence if prepare_next_sequence else None)
 
     # Init
-    print_and_reset()
+    _print_and_reset()
 
     # Hello
     cmd.text('ESC/P direct printing test page').cr_lf(2)
-    print_and_reset()
+    _print_and_reset()
 
     # Text enhancement
     cmd.text('Text enhancements').cr_lf()
@@ -52,7 +61,7 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
     cmd.text('Italic').cr_lf()
     cmd.italic(True).text(fox()).italic(False).cr_lf()
     cmd.cr_lf()
-    print_and_reset()
+    _print_and_reset()
 
     # Char width
     cmd.text('Character width').cr_lf()
@@ -64,28 +73,28 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
             .text(fox()) \
             .cr_lf()
     cmd.cr_lf()
-    print_and_reset()
+    _print_and_reset()
 
     # Typeface
     cmd.text('Typeface').cr_lf()
     cmd.text('Roman').cr_lf()
-    cmd.typeface(escp.Typeface.ROMAN)
+    cmd.typeface(Typeface.ROMAN)
     cmd.text('    ').text(fox()).cr_lf()
-    cmd.typeface(escp.Typeface.SANS_SERIF)
+    cmd.typeface(Typeface.SANS_SERIF)
     cmd.text('Sans Serif').cr_lf()
     cmd.text('    ').text(fox()).cr_lf()
     cmd.cr_lf()
-    print_and_reset()
+    _print_and_reset()
 
     # Margins (left)
     cmd.text('Margins (left)')
     for margin in [0, 4, 8]:
         cmd \
-            .margin(escp.Margin.LEFT, margin) \
+            .margin(Margin.LEFT, margin) \
             .text(f'[x] text started at col {margin}') \
             .cr_lf()
     cmd.cr_lf()
-    print_and_reset()
+    _print_and_reset()
 
     # Character size
     cmd.text('Character size').cr_lf()
@@ -98,7 +107,7 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
         .double_character_width(False) \
         .double_character_height(False) \
         .cr_lf(2)
-    print_and_reset()
+    _print_and_reset()
 
     # Character spacing
     cmd.text('Extra space between characters').cr_lf()
@@ -109,13 +118,13 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
             .extra_space(extra_space) \
             .text(fox()) \
             .cr_lf()
-        print_and_reset()
+        _print_and_reset()
     cmd.cr_lf()
 
     # Condensed
     cmd.text('Condensed text').cr_lf()
     cmd.condensed(True).text(fox()).text('. ').text(fox()).condensed(False).cr_lf(2)
-    print_and_reset()
+    _print_and_reset()
 
     # Line spacing
     cmd \
@@ -129,32 +138,58 @@ def print_test_page(printers: [escp.Printer], cmd: escp.Commands):
         .line_spacing(1, 6) \
         .text(fox()).cr_lf().text(fox()).cr_lf() \
         .cr_lf()
-    print_and_reset()
+    _print_and_reset()
 
     # Proportional
     cmd.text('Proportional text').cr_lf()
     cmd.proportional(True).text(lorem()).proportional(False).cr_lf(2)
-    print_and_reset()
+    _print_and_reset()
 
     # Justification
     cmd.text('Justification (with proportional)').cr_lf()
     cmd.proportional(True)
-    cmd.justify(escp.Justification.LEFT).text(fox()).cr_lf()
-    cmd.justify(escp.Justification.CENTER).text(fox()).cr_lf()
-    cmd.justify(escp.Justification.RIGHT).text(fox()).cr_lf(2)
-    print_and_reset()
+    cmd.justify(Justification.LEFT).text(fox()).cr_lf()
+    cmd.justify(Justification.CENTER).text(fox()).cr_lf()
+    cmd.justify(Justification.RIGHT).text(fox()).cr_lf(2)
+    _print_and_reset()
 
     cmd.proportional(True)
-    cmd.justify(escp.Justification.CENTER).text(lorem()).cr_lf(2)
-    print_and_reset()
+    cmd.justify(Justification.CENTER).text(lorem()).cr_lf(2)
+    _print_and_reset()
 
     cmd.proportional(True)
-    cmd.justify(escp.Justification.FULL).text(lorem()).cr_lf(2)
+    cmd.justify(Justification.FULL).text(lorem()).cr_lf(2)
     cmd.proportional(False)
-    print_and_reset(prepare_next_sequence=False)
+    _print_and_reset(prepare_next_sequence=False)
 
     for printer in printers:
         printer.close()
+
+
+def astronomer(printers: [Printer], cmd: Commands):
+    def _print_and_reset():
+        print_and_reset(printers, cmd)
+
+    text = """When I heard the learn'd astronomer
+When the proofs, the figures, were ranged in columns before me
+When I was shown the charts and diagrams, to add, divide, and measure them 
+When I sitting heard the astronomer where he lectured
+with much applause in the lecture-room
+How soon unaccountable I became tired and sick
+Till rising and gliding out I wander'd off by myself
+In the mystical moist night-air, and from time to time
+Look'd up in perfect silence at the stars
+"""
+    cmd \
+        .init() \
+        .justify(Justification.CENTER) \
+        .proportional(True) \
+        .line_spacing(45, 216) \
+        .bold(True).text('When I heard the learn\'d astronomer').bold(False).cr_lf(2) \
+        .italic(True).text('by Walt Whitman').italic(False).cr_lf(2) \
+        .text(text) \
+        .linefeed()
+    _print_and_reset()
 
 
 def usage():
@@ -183,10 +218,10 @@ if __name__ == '__main__':
         exit(1)
 
     try:
-        printer = escp.UsbPrinter(id_vendor=id_vendor, id_product=id_product)
-        debug = escp.DebugPrinter()
-        commands = escp.lookup_by_pins(pins)
+        printer = UsbPrinter(id_vendor=id_vendor, id_product=id_product)
+        debug = DebugPrinter()
+        commands = lookup_by_pins(pins)
         print_test_page([printer, debug], commands)
-    except escp.PrinterNotFound as e:
+    except PrinterNotFound as e:
         print(f'Printer not found: {e}', file=sys.stderr)
         exit(1)
