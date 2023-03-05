@@ -1,7 +1,7 @@
 from typing import Self
 
 from .parameters import PageLengthUnit
-from .commands import Commands
+from .commands import Commands, int_to_bytes
 
 
 class Commands_24_48_Pin(Commands):
@@ -46,8 +46,8 @@ class Commands_24_48_Pin(Commands):
             case 1, 8:
                 return self._append_cmd('line_spacing_1_8')
             case n, 180:
-                return self._append_cmd('line_spacing_n_180', bytes(n))
+                return self._append_cmd('line_spacing_n_180', int_to_bytes(n))
             case n, 360:
-                return self._append_cmd('line_spacing_n_360', bytes(n))
+                return self._append_cmd('line_spacing_n_360', int_to_bytes(n))
             case _:
                 raise ValueError(f'Invalid line spacing: {numerator}/{denominator}')
