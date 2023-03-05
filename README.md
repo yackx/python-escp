@@ -31,7 +31,7 @@ commands.init().text('ESC/P direct printing test page').cr_lf(2)
 printer.send(commands.buffer)
 ```
 
-See  [demo](demo.py) for a more complete example.
+See  [demo](src/escp/demo.py) for a more complete example.
 
 ## Features
 
