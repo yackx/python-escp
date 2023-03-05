@@ -67,9 +67,11 @@ class Commands(ABC):
     def draft(self, enabled: bool) -> T:
         return self
 
-    def text(self, content: bytes | str) -> T:
+    def text(self, content: bytes | str | int) -> T:
         if isinstance(content, str):
             content = bytes(content, 'utf-8')
+        elif isinstance(content, int):
+            content = int_to_bytes(content)
         return self._append(content)
 
     def cr_lf(self, how_many=1) -> T:

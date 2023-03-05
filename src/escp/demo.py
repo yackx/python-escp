@@ -180,7 +180,7 @@ def print_test_page(printers: [Printer], cmd: Commands):
             .text(str(i)) \
             .text(' ') \
             .upper_control_codes_printing(True) \
-            .text(chr(i)) \
+            .text(i) \
             .upper_control_codes_printing(False) \
             .text('   ')
     cmd.cr_lf()
@@ -251,7 +251,7 @@ if __name__ == '__main__':
         printer = UsbPrinter(id_vendor=id_vendor, id_product=id_product)
         debug = DebugPrinter()
         commands = lookup_by_pins(pins)
-        print_test_page([printer, debug], commands)
+        print_test_page([debug], commands)
     except PrinterNotFound as e:
         print(f'Printer not found: {e}', file=sys.stderr)
         exit(1)
