@@ -60,6 +60,8 @@ def print_test_page(printers: [Printer], cmd: Commands):
     cmd.bold(True).text(fox()).bold(False).cr_lf()
     cmd.text('Italic').cr_lf()
     cmd.italic(True).text(fox()).italic(False).cr_lf()
+    cmd.text('Double strike').cr_lf()
+    cmd.double_strike(True).text(fox()).double_strike(False).cr_lf()
     cmd.cr_lf()
     _print_and_reset()
 

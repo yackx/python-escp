@@ -20,6 +20,8 @@ class Commands(ABC):
         'bold_off': b'\x1bF',
         'italic_on': b'\x1b4',
         'italic_off': b'\x1b5',
+        'double_strike_on': b'\x1bG',
+        'double_strike_off': b'\x1bH',
         'typeface': b'\x1bk',
         'margin_left': b'\x1bl',
         'margin_right': b'\x1bQ',
@@ -65,6 +67,10 @@ class Commands(ABC):
 
     def italic(self, enabled: bool) -> Self:
         return self._append_cmd('italic_on' if enabled else 'italic_off')
+
+    def double_strike(self, enabled: bool) -> Self:
+        """Prints each dot twice, with the second slightly below the first, creating bolder characters."""
+        return self._append_cmd('double_strike_on' if enabled else 'double_strike_off')
 
     def character_width(self, width: int) -> Self:
         """Select the character width. This may set the point as well.
