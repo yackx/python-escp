@@ -11,9 +11,6 @@ class Commands_24_48_Pin(Commands):
         'line_spacing_n_360': b'\x1b+',
     }
 
-    def __init__(self, *, debug=False):
-        super().__init__()
-
     def _commands(self):
         return super()._commands().update(self.specific_cmds)
 

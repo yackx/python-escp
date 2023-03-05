@@ -10,9 +10,6 @@ class Commands_9_Pin(Commands):
         'line_spacing_n_216': b'\x1b3',
     }
 
-    def __init__(self, *, debug=False):
-        super().__init__()
-
     def _commands(self):
         cmds = super()._commands().copy()
         cmds.update(self.specific_cmds)
