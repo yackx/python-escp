@@ -38,6 +38,7 @@ class Commands(ABC):
         'page_length_in_lines': b'\x1bC',
         'page_length_in_inches': b'\x1bC\x00',
         'double_character_width': b'\x1bW',
+        'double_character_width_one_line': b'\x1b\x0e',
         'double_character_height': b'\x1bw',
         'extra_space': b'\x1b ',
         'condensed_on': b'\x1b\x0f',
@@ -150,7 +151,13 @@ class Commands(ABC):
         cmd = 'page_length_in_inches' if unit == PageLengthUnit.INCHES else 'page_length_in_lines'
         return self._append_cmd(cmd, bytes(value))
 
-    def double_character_width(self, enabled: bool) -> T:
+    def double_character_width(self, enabled: bool, one_line=False) -> T:
+        """Select double-width printing.
+
+        Doubles the width of all characters, spaces, and intercharacter spacing.
+        """
+        if one_line and enabled:
+            return self._append_cmd('double_character_width_one_line')
         return self._append_cmd('double_character_width', int_to_bytes(1) if enabled else int_to_bytes(0))
 
     def double_character_height(self, enabled: bool) -> T:
