@@ -84,7 +84,10 @@ class Commands(ABC):
         return self._append_cmd('italic_on' if enabled else 'italic_off')
 
     def double_strike(self, enabled: bool) -> T:
-        """Prints each dot twice, with the second slightly below the first, creating bolder characters."""
+        """Prints each dot twice, with the second slightly below the first, creating bolder characters.
+
+        On 9-pin printers, NLQ overrides double strike.
+        """
         return self._append_cmd('double_strike_on' if enabled else 'double_strike_off')
 
     def underline(self, enabled: bool) -> T:
