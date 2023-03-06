@@ -15,6 +15,7 @@ class Commands(ABC):
 
     cmds = {
         'init': b'\x1b@',
+        'draft': b'\x1bx',
         'cr_lf': b'\x0d\x0a',
         'character_width_10': b'\x1bP',
         'character_width_12': b'\x1bM',
@@ -65,7 +66,13 @@ class Commands(ABC):
         return self._append_cmd('init')
 
     def draft(self, enabled: bool) -> T:
-        return self
+        """Change the print quality to draft or letter quality.
+
+        Point sizes 10.5 and 21 only.
+        LQ quality for ESC/P2 and ESC/P.
+        NLQ for 9-pin printers.
+        """
+        return self._append_cmd('draft', int_to_bytes(1 if enabled else 0))
 
     def text(self, content: bytes | str | int) -> T:
         if isinstance(content, str):
