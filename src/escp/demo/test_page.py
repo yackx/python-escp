@@ -1,9 +1,5 @@
-import sys
-
-from src.escp import (
-    Printer, PrinterNotFound, UsbPrinter, DebugPrinter,
-    Commands, Typeface, Margin, Justification, lookup_by_pins,
-)
+from src.escp import Commands, Justification, Margin, Printer, Typeface
+from .common import print_and_reset
 
 
 def fox() -> bytes:
@@ -30,14 +26,6 @@ def mini_lorem() -> bytes:
 
 def sep_line(count=20) -> bytes:
     return b'-' * count
-
-
-def print_and_reset(printers: [Printer], cmd: Commands, reset_sequence=None):
-    for printer in printers:
-        printer.send(cmd.buffer)
-
-    if reset_sequence:
-        reset_sequence()
 
 
 def print_test_page(printers: [Printer], cmd: Commands):
@@ -191,67 +179,3 @@ def print_test_page(printers: [Printer], cmd: Commands):
 
     for printer in printers:
         printer.close()
-
-
-def astronomer(printers: [Printer], cmd: Commands):
-    def _print_and_reset():
-        print_and_reset(printers, cmd)
-
-    text = """When I heard the learn'd astronomer
-When the proofs, the figures, were ranged in columns before me
-When I was shown the charts and diagrams, to add, divide, and measure them 
-When I sitting heard the astronomer where he lectured
-with much applause in the lecture-room
-How soon unaccountable I became tired and sick
-Till rising and gliding out I wander'd off by myself
-In the mystical moist night-air, and from time to time
-Look'd up in perfect silence at the stars
-"""
-    cmd \
-        .init() \
-        .justify(Justification.CENTER) \
-        .proportional(True) \
-        .line_spacing(45, 216) \
-        .bold(True).text('When I heard the learn\'d astronomer').bold(False).cr_lf(2) \
-        .italic(True).text('by Walt Whitman').italic(False).cr_lf(2) \
-        .text(text) \
-        .form_feed()
-    _print_and_reset()
-
-    for printer in printers:
-        printer.close()
-
-
-def usage():
-    print('Print a demo page')
-    print(f'{sys.argv[0]} connector pins [id_vendor] [id_product]')
-    print('    connector: usb')
-    print('    pins: 9, 24, 48')
-    print('    id_vendor: Vendor identifier (USB)')
-    print('    id_product: Product identifier (USB)')
-    print('Values id_vendor and id_product should be in hexadecimal. Example for Epson LX-300+II:')
-    print(f'{sys.argv[0]} usb 9 0x04b8 0x0005')
-
-
-if __name__ == '__main__':
-    try:
-        connector = sys.argv[1]
-        if connector != 'usb':
-            raise ValueError()
-        pins = int(sys.argv[2])
-        if pins not in [9, 24, 48]:
-            raise ValueError()
-        id_vendor = int(sys.argv[3], 16)
-        id_product = int(sys.argv[4], 16)
-    except Exception:
-        usage()
-        exit(1)
-
-    try:
-        printer = UsbPrinter(id_vendor=id_vendor, id_product=id_product)
-        debug = DebugPrinter()
-        commands = lookup_by_pins(pins)
-        print_test_page([debug], commands)
-    except PrinterNotFound as e:
-        print(f'Printer not found: {e}', file=sys.stderr)
-        exit(1)
