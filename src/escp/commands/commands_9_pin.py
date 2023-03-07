@@ -20,7 +20,7 @@ class Commands_9_Pin(Commands):
 
         The value is the number of lines per page.
         """
-        pass
+        return self
 
     def extra_space(self, value: int) -> Self:
         """Add extra space between characters.
