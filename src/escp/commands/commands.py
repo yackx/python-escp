@@ -180,7 +180,7 @@ class Commands(ABC):
         :param unit The unit of the page length
         """
         cmd = 'page_length_in_inches' if unit == PageLengthUnit.INCHES else 'page_length_in_lines'
-        return self._append_cmd(cmd, bytes(value))
+        return self._append_cmd(cmd, int_to_bytes(value))
 
     def double_character_width(self, enabled: bool, one_line=False) -> T:
         """Select double-width printing.

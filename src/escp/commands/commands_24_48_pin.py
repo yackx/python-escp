@@ -1,6 +1,5 @@
 from typing import Self
 
-from .parameters import PageLengthUnit
 from .commands import Commands, int_to_bytes
 
 
@@ -13,13 +12,6 @@ class Commands_24_48_Pin(Commands):
 
     def _commands(self):
         return super()._commands().update(self.specific_cmds)
-
-    def page_length(self, value: int, unit: PageLengthUnit) -> Self:
-        """Set page length.
-
-        The value is the number of lines per page.
-        """
-        return self
 
     def extra_space(self, value: int) -> Self:
         """Add extra space between characters.
