@@ -158,6 +158,8 @@ class Commands(ABC):
         """
         if value < 0 or value > 255:
             raise ValueError(f'Invalid margin value: ${value}')
+        if margin == Margin.TOP:
+            raise NotImplementedError('Top margin is only available on ESC/P2 printers.')
         return self._append_cmd(f'margin_{margin.name.lower()}', int_to_bytes(value))
 
     def line_spacing(self, numerator: int, denominator: int) -> T:
