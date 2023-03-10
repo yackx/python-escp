@@ -1,4 +1,6 @@
-from src.escp import Commands, Justification, Margin, Printer, Typeface
+from ..commands import Commands, Justification, Margin, Typeface
+from ..printer import Printer
+
 from .common import print_and_reset
 
 

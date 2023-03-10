@@ -1,4 +1,5 @@
-from src.escp import Commands, Justification, PageLengthUnit, Printer
+from ..commands import Commands, Justification, PageLengthUnit
+from ..printer import Printer
 from .common import print_and_reset
 
 

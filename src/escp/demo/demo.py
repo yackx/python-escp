@@ -1,8 +1,9 @@
 import sys
 
-from src.escp import DebugPrinter, PrinterNotFound, UsbPrinter, lookup_by_pins
-from src.escp.demo.test_page import print_test_page
-from src.escp.demo.poem import print_poem
+from ..printer import DebugPrinter, PrinterNotFound, UsbPrinter
+from ..commands import lookup_by_pins
+from .test_page import print_test_page
+from .poem import print_poem
 
 
 def usage():

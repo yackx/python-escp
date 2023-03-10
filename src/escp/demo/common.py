@@ -1,4 +1,5 @@
-from src.escp import Commands, Printer
+from ..commands import Commands
+from ..printer import Printer
 
 
 def print_and_reset(printers: [Printer], cmd: Commands, reset_sequence=None):
