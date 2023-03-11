@@ -23,3 +23,21 @@ class Justification(Enum):
     CENTER = 1
     RIGHT = 2
     FULL = 3
+
+
+class CharacterSetVariant(Enum):
+    USA = 0
+    FRANCE = 1
+    GERMANY = 2
+    UK = 3
+    DENMARK_I = 4
+    SWEDEN = 5
+    ITALY = 6
+    SPAIN_I = 7
+    JAPAN = 8
+    NORWAY = 9
+    DENMARK_II = 10
+    SPAIN_II = 11
+    LATIN_AMERICA = 12
+    KOREA = 13
+    LEGAL = 64

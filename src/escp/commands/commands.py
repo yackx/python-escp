@@ -1,6 +1,8 @@
 from typing import TypeVar
 from abc import ABC
 
+from escp.commands.parameters import CharacterSetVariant
+
 from .parameters import Margin, PageLengthUnit, Typeface, Justification
 
 
@@ -52,6 +54,7 @@ class Commands(ABC):
         'proportional': b'\x1bp',
         'justify': b'\x1ba',
         'form_feed': b'\x0c',
+        'character_set': b'\x1bR',
     }
 
     _buffer: bytes
@@ -74,9 +77,36 @@ class Commands(ABC):
         """
         return self._append_cmd('draft', int_to_bytes(1 if enabled else 0))
 
-    def text(self, content: bytes | str | int) -> T:
+    def character_set(self, cs: CharacterSetVariant) -> T:
+        """Change up to 12 of the characters in the current character table.
+
+        These 12 characters are called international character sets
+        because they correspond to characters commonly used in several foreign
+        languages. [R-41]
+
+        It is up to the implementer to decide when to set this command
+        to the printer to print specific characters.
+
+        :param cs: Character set variant.
+        """
+        return self._append_cmd('character_set', int_to_bytes(cs.value))
+
+    def text(self, content: bytes | str | int, *, encoding='cp437') -> T:
+        """Add text to the buffer.
+
+        :param content:
+        Text to add. Can be a string, bytes or integer.
+        If it is a string, it will be encoded using the given encoding.
+        If it is an integer, it will be converted to a single byte: 42 -> b'\x2a'.
+        If it is bytes, it will be added as is.
+
+        :param encoding:
+        Encoding to use when converting a string to bytes.
+        The natural encoding for ESC/P is cp437, but you can use any compatible encoding.
+        Note that the ESC/P2 manual refers to 'PC437' encoding.
+        """
         if isinstance(content, str):
-            content = bytes(content, 'utf-8')
+            content = bytes(content, encoding)
         elif isinstance(content, int):
             content = int_to_bytes(content)
         return self._append(content)
