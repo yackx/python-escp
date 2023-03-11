@@ -1,6 +1,6 @@
 from typing import Self
 
-from .commands import Commands, int_to_bytes
+from .commands import Commands, int_to_bytes, CharacterTable
 
 
 class Commands_24_48_Pin(Commands):
@@ -11,7 +11,18 @@ class Commands_24_48_Pin(Commands):
     }
 
     def _commands(self):
-        return super()._commands().update(self.specific_cmds)
+        cmds = super()._commands().copy()
+        cmds.update(self.specific_cmds)
+        return cmds
+
+    def is_valid_character_table(self, table: int) -> bool:
+        return 0 <= table <= 3
+
+    def select_character_table(self, table: int) -> Self:
+        return super().select_character_table(table)
+
+    def assign_character_table(self, table: int, ct: CharacterTable) -> Self:
+        return super().assign_character_table(table, ct)
 
     def extra_space(self, value: int) -> Self:
         """Add extra space between characters.

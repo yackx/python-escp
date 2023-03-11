@@ -1,6 +1,8 @@
 from typing import Self
 
-from .commands import Commands, int_to_bytes
+from escp.commands.commands import T
+
+from .commands import Commands, int_to_bytes, CharacterTable
 
 
 class Commands_9_Pin(Commands):
@@ -13,6 +15,23 @@ class Commands_9_Pin(Commands):
         cmds = super()._commands().copy()
         cmds.update(self.specific_cmds)
         return cmds
+
+    def is_valid_character_table(self, table: int) -> bool:
+        return 0 <= table <= 1
+
+    def select_character_table(self, table: int) -> Self:
+        """Select the character table.
+
+        0: Italic
+        1: PC437(US) ('cp437' in Python)
+        [C-79].
+
+        :param table: Character table number.
+        """
+        return super().select_character_table(table)
+
+    def assign_character_table(self, table: int, ct: CharacterTable) -> T:
+        return super().assign_character_table(table, ct)
 
     def extra_space(self, value: int) -> Self:
         """Add extra space between characters.

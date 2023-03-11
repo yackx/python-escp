@@ -1,9 +1,7 @@
 from typing import TypeVar
 from abc import ABC
 
-from escp.commands.parameters import CharacterSetVariant
-
-from .parameters import Margin, PageLengthUnit, Typeface, Justification
+from .parameters import Margin, PageLengthUnit, Typeface, Justification, CharacterSetVariant, CharacterTable
 
 
 def int_to_bytes(value: int) -> bytes:
@@ -55,6 +53,8 @@ class Commands(ABC):
         'justify': b'\x1ba',
         'form_feed': b'\x0c',
         'character_set': b'\x1bR',
+        'select_character_table': b'\x1b\x74',
+        'assign_character_table': b'\x1b\x28\x74',
     }
 
     _buffer: bytes
@@ -76,6 +76,38 @@ class Commands(ABC):
         NLQ for 9-pin printers.
         """
         return self._append_cmd('draft', int_to_bytes(1 if enabled else 0))
+
+    def is_valid_character_table(self, table: int) -> bool:
+        """Test if the given character table is valid.
+
+        Depends on the printer number of pins.
+        """
+        raise NotImplementedError()
+
+    def select_character_table(self, table: int) -> T:
+        """Select the character table.
+
+        There are 2 or 4 character tables depending on the printer type [C-77].
+        Use the ESC ( t command to assign any registered character table to any character table.
+
+        :param table: Character table number.
+        """
+        if not self.is_valid_character_table(table):
+            raise ValueError(f'Invalid character table {table}')
+        return self._append_cmd('select_character_table', int_to_bytes(table))
+
+    def assign_character_table(self, table: int, ct: CharacterTable) -> T:
+        """Assign the given character table `ct` to the character `table`.
+
+        :param table: Character table number to assign to.
+        :param ct: Character table to assign.
+        """
+        if not self.is_valid_character_table(table):
+            raise ValueError('Invalid character table')
+        return self._append_cmd(
+            'assign_character_table',
+            b'\x03\x00' + int_to_bytes(table) + int_to_bytes(ct.d2) + int_to_bytes(ct.d3)
+        )
 
     def character_set(self, cs: CharacterSetVariant) -> T:
         """Change up to 12 of the characters in the current character table.

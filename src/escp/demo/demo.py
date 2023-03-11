@@ -4,18 +4,19 @@ from ..printer import DebugPrinter, PrinterNotFound, UsbPrinter
 from ..commands import lookup_by_pins
 from .test_page import print_test_page
 from .poem import print_poem
+from .char_tables import print_char_table
 
 
 def usage():
     print('Print a demo page')
     print(f'{sys.argv[0]} demo connector pins [id_vendor] [id_product]')
-    print('    demo: test | poem')
+    print('    demo: test | poem | charset')
     print('    connector: usb')
     print('    pins: 9, 24, 48')
     print('    id_vendor: Vendor identifier (USB)')
     print('    id_product: Product identifier (USB)')
     print('Values id_vendor and id_product should be in hexadecimal. Example for Epson LX-300+II:')
-    print(f'{sys.argv[0]} usb 9 0x04b8 0x0005')
+    print(f'{sys.argv[0]} poem usb 9 0x04b8 0x0005')
 
 
 def print_function(demo: str):
@@ -24,6 +25,8 @@ def print_function(demo: str):
             return print_test_page
         case 'poem':
             return print_poem
+        case 'charset':
+            return print_char_table
         case _:
             raise ValueError(f'Unknown demo: {demo}')
 
