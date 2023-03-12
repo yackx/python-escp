@@ -1,12 +1,7 @@
 import pytest
+from src.escp import Margin, PageLengthUnit, Typeface
 
-from src.escp import Commands, Margin, PageLengthUnit, Typeface
-from src.escp.commands.commands import T
-
-
-class CommandsDefault(Commands):
-    def line_spacing(self, numerator: int, denominator: int) -> T:
-        raise NotImplementedError()
+from test import CommandsDefault
 
 
 @pytest.fixture

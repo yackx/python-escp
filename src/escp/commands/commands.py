@@ -1,5 +1,5 @@
 from typing import TypeVar
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from .parameters import Margin, PageLengthUnit, Typeface, Justification, CharacterSetVariant, CharacterTable
 
@@ -77,6 +77,7 @@ class Commands(ABC):
         """
         return self._append_cmd('draft', int_to_bytes(1 if enabled else 0))
 
+    @abstractmethod
     def is_valid_character_table(self, table: int) -> bool:
         """Test if the given character table is valid.
 
@@ -224,6 +225,7 @@ class Commands(ABC):
             raise NotImplementedError('Top margin is only available on ESC/P2 printers.')
         return self._append_cmd(f'margin_{margin.name.lower()}', int_to_bytes(value))
 
+    @abstractmethod
     def line_spacing(self, numerator: int, denominator: int) -> T:
         """Set line spacing.
 
