@@ -124,7 +124,7 @@ class Commands(ABC):
         """
         return self._append_cmd('character_set', int_to_bytes(cs.value))
 
-    def text(self, content: bytes | str | int, *, encoding='cp437') -> T:
+    def text(self, content: bytes | str | int, *, encoding=None) -> T:
         """Add text to the buffer.
 
         :param content:
@@ -135,9 +135,13 @@ class Commands(ABC):
 
         :param encoding:
         Encoding to use when converting a string to bytes.
-        The natural encoding for ESC/P is cp437, but you can use any compatible encoding.
+        The natural encoding for ESC/P is `cp437`, but you can use any compatible encoding.
         Note that the ESC/P2 manual refers to 'PC437' encoding.
         """
+        if encoding and not isinstance(encoding, str):
+            raise ValueError('encoding valid only for a string')
+        if not encoding:
+            encoding = 'cp437'
         if isinstance(content, str):
             content = bytes(content, encoding)
         elif isinstance(content, int):
