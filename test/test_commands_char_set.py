@@ -1,5 +1,5 @@
 import pytest
-from escp.commands.parameters import CharacterSetVariant
+from src.escp import InvalidEncodingError
 
 from test import CommandsDefault
 
@@ -9,13 +9,41 @@ def commands():
     return CommandsDefault()
 
 
-def test_char_set(commands):
-    assert commands.character_set(CharacterSetVariant.FRANCE).buffer == b'\x1bR\x01'
+@pytest.mark.parametrize('encoding,', ['cp437', 'utf-8'])
+def test_encoding_independent(commands, encoding):
+    assert commands.text("Hello world", encoding=encoding).buffer == b'Hello world'
 
 
-def test_char_brace(commands):
-    assert commands.text("{", encoding='cp437').buffer == b'\x7b'
+usa_char_set_fixture = [
+    ('#', b'\x23'), ('$', b'\x24'), ('@', b'\x40'), ('[', b'\x5b'),
+    ('\\', b'\x5c'), (']', b'\x5d'), ('^', b'\x5e'), ('`', b'\x60'),
+    ('{', b'\x7b'), ('|', b'\x7c'), ('}', b'\x7d'), ('~', b'\x7e')
+]
 
 
-def test_char_e_accent(commands):
-    assert commands.text("é", encoding='cp437').buffer == b'\x82'
+@pytest.mark.parametrize('char,expected', usa_char_set_fixture)
+def test_cp437_usa(commands, char, expected):
+    assert commands.text(char, encoding='cp437').buffer == expected
+
+
+@pytest.mark.parametrize('char,expected', usa_char_set_fixture)
+def test_utf8_usa(commands, char, expected):
+    assert commands.text(char, encoding='utf-8').buffer == expected
+
+
+def test_utf8_french(commands):
+    # should send \x7b with international character set 1 (France)
+    with pytest.raises(InvalidEncodingError):
+        commands.text("é", encoding='utf-8')
+
+
+def test_utf8_emoji(commands):
+    # Can never be encoded in cp437
+    with pytest.raises(InvalidEncodingError):
+        commands.text("😢", encoding='utf-8')
+
+
+def test_cp437_emoji(commands):
+    # Can never be encoded in cp437
+    with pytest.raises(UnicodeError):
+        commands.text("😢", encoding='cp437')
