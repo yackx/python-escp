@@ -1,6 +1,7 @@
 from typing import TypeVar
 from abc import ABC, abstractmethod
 
+from .exceptions import InvalidEncodingError
 from .parameters import Margin, PageLengthUnit, Typeface, Justification, CharacterSetVariant, CharacterTable
 
 
@@ -142,11 +143,16 @@ class Commands(ABC):
             raise ValueError('encoding valid only for a string')
         if not encoding:
             encoding = 'cp437'
+
         if isinstance(content, str):
-            content = bytes(content, encoding)
+            c = bytes(content, encoding)
+            if len(c) != len(content):
+                raise InvalidEncodingError(f'length of content encoded to {encoding} mismatches original length')
         elif isinstance(content, int):
-            content = int_to_bytes(content)
-        return self._append(content)
+            c = int_to_bytes(content)
+        elif isinstance(content, bytes):
+            c = content
+        return self._append(c)
 
     def cr_lf(self, how_many=1) -> T:
         return self._append(self._commands()['cr_lf'] * how_many)
