@@ -1,16 +1,18 @@
 import sys
 
+
 from ..printer import DebugPrinter, PrinterNotFound, UsbPrinter
 from ..commands import lookup_by_pins
 from .test_page import print_test_page
 from .poem import print_poem
 from .char_tables import print_char_table
+from .i18n_char_set import print_i18n_char_set
 
 
 def usage():
     print('Print a demo page')
     print(f'{sys.argv[0]} demo connector pins [id_vendor] [id_product]')
-    print('    demo: test | poem | charset')
+    print('    demo: test | poem | chartable | charset')
     print('    connector: usb')
     print('    pins: 9, 24, 48')
     print('    id_vendor: Vendor identifier (USB)')
@@ -21,21 +23,25 @@ def usage():
 
 def print_function(demo: str):
     match demo:
-        case 'test':
+        case 'testpage':
             return print_test_page
         case 'poem':
             return print_poem
-        case 'charset':
+        case 'chartable':
             return print_char_table
+        case 'charset':
+            return print_i18n_char_set
         case _:
             raise ValueError(f'Unknown demo: {demo}')
 
 
 def demo(id_vendor: int, id_product: int, pins: int, print_function):
+    # Actual printer
     printer = UsbPrinter(id_vendor=id_vendor, id_product=id_product)
+    # Debug (shows the commands with formatting)
     debug = DebugPrinter()
     commands = lookup_by_pins(pins)
-    print_function([debug, printer], commands)
+    print_function([printer, debug], commands)
 
 
 if __name__ == '__main__':
