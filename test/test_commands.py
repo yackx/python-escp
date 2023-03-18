@@ -119,7 +119,7 @@ def test_typeface(commands, typeface, value):
 @pytest.mark.parametrize(
     'side,codes', [
         (Margin.RIGHT, b'\x1bQ\x05'),
-        (Margin.BOTTOM, b'\x1b2\x05'),
+        (Margin.BOTTOM, b'\x1bN\x05'),
         (Margin.LEFT, b'\x1bl\x05'),
     ]
 )
