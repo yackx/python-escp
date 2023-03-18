@@ -26,8 +26,8 @@ class UsbPrinter(Printer):
 
         self.device: usb.core.Device = usb.core.find(idVendor=self.id_vendor, idProduct=self.id_product)
         if not self.device:
-            hex = lambda x: f'0x{x:04x}'
-            raise PrinterNotFound(f'USB id_vendor={hex(id_vendor)} id_product={hex(id_product)}')
+            hex_value = lambda x: f'0x{x:04x}'
+            raise PrinterNotFound(f'USB id_vendor={hex_value(id_vendor)} id_product={hex_value(id_product)}')
         print(self.device)
         # TODO Check is printer
 
