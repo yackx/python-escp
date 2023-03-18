@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 
 from .exceptions import InvalidEncodingError
 from .parameters import Margin, PageLengthUnit, Typeface, Justification, CharacterSetVariant, CharacterTable
+from .magic_encoding import magic_encoding
 
 
 def int_to_bytes(value: int) -> bytes:
@@ -61,6 +62,7 @@ class Commands(ABC):
     _buffer: bytes
 
     def __init__(self):
+        self.current_character_set = CharacterSetVariant.USA
         self.clear()
 
     def _commands(self):
@@ -123,10 +125,13 @@ class Commands(ABC):
 
         :param cs: Character set variant.
         """
+        self.current_character_set = cs
         return self._append_cmd('character_set', int_to_bytes(cs.value))
 
     def text(self, content: bytes | str | int, *, encoding=None) -> T:
         """Add text to the buffer.
+
+        Make sure the string or bytes you send are compatible with the printer encoding.
 
         :param content:
         Text to add. Can be a string, bytes or integer.
@@ -153,6 +158,40 @@ class Commands(ABC):
         elif isinstance(content, bytes):
             c = content
         return self._append(c)
+
+    def magic_text(self, content: str) -> T:
+        """Print UTF-8 text using the magic encoding.
+
+        This method will attempt to issue character set commands in order to print
+        the given UTF-8 string.
+
+        For instance, if the string contains an accented character 'é', it will switch to French
+        character set (`CharacterSetVariant.FRANCE` i.e. ESC R \x01), print the character,
+        and switch back to the original character set (USA is assumed).
+
+        The switch occurs only if necessary, i.e. if the character is not available in the current character set.
+
+        See `magic_encoding` for the mapping. Note that the mapping is far from complete.
+
+        :param content: UTF-8 string to print.
+        """
+        initial_character_set = self.current_character_set
+        for c in content:
+            try:
+                cs, code = magic_encoding[c]
+                if self.current_character_set.value != cs.value:
+                    self.character_set(cs)
+                self.text(code)
+            except KeyError:
+                # no magic encoding needed
+                if self.current_character_set.value != initial_character_set.value:
+                    self.character_set(initial_character_set)
+                self.text(c)
+
+        if self.current_character_set != initial_character_set:
+            self.character_set(initial_character_set)
+
+        return self
 
     def cr_lf(self, how_many=1) -> T:
         return self._append(self._commands()['cr_lf'] * how_many)
