@@ -59,7 +59,7 @@ class Commands(ABC):
         'assign_character_table': b'\x1b\x28\x74',
     }
 
-    _buffer: bytes
+    _buffer: bytearray
 
     def __init__(self):
         self.current_character_set = CharacterSetVariant.USA
@@ -356,7 +356,7 @@ class Commands(ABC):
         return self._append_cmd('form_feed')
 
     def _append(self, b: bytes) -> T:
-        self._buffer += b
+        self._buffer += bytearray(b)
         return self
 
     def _append_cmd(self, cmd: str, param: bytes = None) -> T:
@@ -368,12 +368,12 @@ class Commands(ABC):
         return self._append(seq)
 
     def clear(self) -> T:
-        self._buffer = b''
+        self._buffer = bytearray()
         return self
 
     @property
     def buffer(self) -> bytes:
-        return self._buffer
+        return bytes(self._buffer)
 
 
 # Not implemented and reserved to 24/48 pin printers
