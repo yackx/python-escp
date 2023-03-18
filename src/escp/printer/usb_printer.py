@@ -14,7 +14,7 @@ class UsbPrinter(Printer):
 
     device: usb.core.Device | None
 
-    def __init__(self, *, id_vendor, id_product, endpoint_out=0x01, endpoint_in=0x82):
+    def __init__(self, *, id_vendor: int, id_product: int, endpoint_out=0x01, endpoint_in=0x82):
         self.device = None
         self.id_vendor = id_vendor
         self.id_product = id_product

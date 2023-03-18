@@ -1,4 +1,5 @@
 import sys
+import argparse
 
 
 from ..printer import DebugPrinter, PrinterNotFound, UsbPrinter
@@ -7,18 +8,6 @@ from .test_page import print_test_page
 from .poem import print_poem
 from .char_tables import print_char_table
 from .i18n_char_set import print_i18n_char_set
-
-
-def usage():
-    print('Print a demo page')
-    print(f'{sys.argv[0]} demo connector pins [id_vendor] [id_product]')
-    print('    demo: test | poem | chartable | charset')
-    print('    connector: usb')
-    print('    pins: 9, 24, 48')
-    print('    id_vendor: Vendor identifier (USB)')
-    print('    id_product: Product identifier (USB)')
-    print('Values id_vendor and id_product should be in hexadecimal. Example for Epson LX-300+II:')
-    print(f'{sys.argv[0]} poem usb 9 0x04b8 0x0005')
 
 
 def print_function(demo: str):
@@ -35,9 +24,9 @@ def print_function(demo: str):
             raise ValueError(f'Unknown demo: {demo}')
 
 
-def demo(id_vendor: int, id_product: int, pins: int, print_function):
+def demo(vendor_id: int, product_id: int, pins: int, print_function):
     # Actual printer
-    printer = UsbPrinter(id_vendor=id_vendor, id_product=id_product)
+    printer = UsbPrinter(id_vendor=vendor_id, id_product=product_id)
     # Debug (shows the commands with formatting)
     debug = DebugPrinter()
     commands = lookup_by_pins(pins)
@@ -45,23 +34,27 @@ def demo(id_vendor: int, id_product: int, pins: int, print_function):
 
 
 if __name__ == '__main__':
-    try:
-        demo_scenario = sys.argv[1]
-        print_function = print_function(demo_scenario)
-        connector = sys.argv[2]
-        if connector != 'usb':
-            raise ValueError()
-        pins = int(sys.argv[3])
-        if pins not in [9, 24, 48]:
-            raise ValueError()
-        id_vendor = int(sys.argv[4], 16)
-        id_product = int(sys.argv[5], 16)
-    except Exception:
-        usage()
-        exit(1)
+    parser = argparse.ArgumentParser(description='Print a demo page')
+    parser.add_argument(
+        'demo', type=str, choices=['testpage', 'poem', 'chartable', 'charset'], help='Binary file to print'
+    )
+    parser.add_argument('-c', '--connector', type=str, required=True, choices=['usb'], help='Connector type')
+    parser.add_argument('-p', '--pins', type=int, required=True, choices=[9, 24, 48], help='Number of pins')
+    parser.add_argument('--vendor-id', type=str, required=True, help='USB Vendor ID (eg 0x04b8)')
+    parser.add_argument('--product-id', type=str, required=True, help='USB Product ID (eg 0x0005)')
+    args = parser.parse_args()
 
     try:
-        demo(id_vendor, id_product, pins, print_function)
+        vendor_id = int(args.vendor_id, 16)
+        product_id = int(args.product_id, 16)
+    except ValueError:
+        print('Invalid vendor/product ID', file=sys.stderr)
+        exit(1)
+
+    print_function = print_function(args.demo)
+
+    try:
+        demo(vendor_id, product_id, args.pins, print_function)
     except PrinterNotFound as e:
         print(f'Printer not found: {e}', file=sys.stderr)
         exit(1)
