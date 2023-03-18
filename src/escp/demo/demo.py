@@ -26,7 +26,7 @@ def print_function(demo: str):
 
 def demo(vendor_id: int, product_id: int, pins: int, print_function):
     # Actual printer
-    printer = UsbPrinter(id_vendor=vendor_id, id_product=product_id)
+    printer = UsbPrinter(id_vendor=vendor_id, id_product=product_id, log_io=sys.stdout)
     # Debug (shows the commands with formatting)
     debug = DebugPrinter()
     commands = lookup_by_pins(pins)
@@ -43,6 +43,7 @@ if __name__ == '__main__':
     parser.add_argument('--vendor-id', type=str, required=True, help='USB Vendor ID (eg 0x04b8)')
     parser.add_argument('--product-id', type=str, required=True, help='USB Product ID (eg 0x0005)')
     args = parser.parse_args()
+    print_function = print_function(args.demo)
 
     try:
         vendor_id = int(args.vendor_id, 16)
@@ -50,8 +51,6 @@ if __name__ == '__main__':
     except ValueError:
         print('Invalid vendor/product ID', file=sys.stderr)
         exit(1)
-
-    print_function = print_function(args.demo)
 
     try:
         demo(vendor_id, product_id, args.pins, print_function)
