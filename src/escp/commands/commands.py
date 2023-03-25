@@ -259,6 +259,9 @@ class Commands(ABC):
     def margin(self, margin: Margin, value: int) -> T:
         """Set a margin.
 
+        For left and right margins, the value equals the number of characters
+        from the left-most mechanically printable position, in the current character pitch.
+
         The right margin value starts from the left margin.
         Example:
             left margin = 10 (1 inch left margin)
