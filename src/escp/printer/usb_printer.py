@@ -1,11 +1,10 @@
-import sys
 import typing
 
 import usb.core
 import usb.util
 
-from .printer import Printer
 from .exceptions import PrinterNotFound
+from .printer import Printer
 
 
 class UsbPrinter(Printer):
@@ -34,7 +33,7 @@ class UsbPrinter(Printer):
         if not self.device:
             hex_value = lambda x: f'0x{x:04x}'
             raise PrinterNotFound(f'USB id_vendor={hex_value(id_vendor)} id_product={hex_value(id_product)}')
-        self.log(self.device)
+        self.log(str(self.device))
         # TODO Check is printer
 
         self.detach_kernel_driver()
@@ -51,13 +50,13 @@ class UsbPrinter(Printer):
             try:
                 check_driver = self.device.is_kernel_driver_active(interface=0)
             except usb.core.USBError as e:
-                self.log(f"Failed to check kernel driver activation: ${e}", file=sys.stderr)
+                self.log(f"Failed to check kernel driver activation: ${e}")
 
             if check_driver is None or check_driver:
                 try:
                     self.device.detach_kernel_driver(0)
                 except usb.core.USBError as e:
-                    self.log(f"Failed to detach kernel driver: ${e}", file=sys.stderr)
+                    self.log(f"Failed to detach kernel driver: ${e}")
 
     def send(self, sequence: bytes):
         self.device.write(self.endpoint_out, sequence, 5)
