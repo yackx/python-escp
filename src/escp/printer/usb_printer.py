@@ -67,7 +67,8 @@ class UsbPrinter(Printer):
         if self.device:
             usb.util.dispose_resources(self.device)
         self.device = None
-        self.log_io.flush()
+        if self.log_io:
+            self.log_io.flush()
 
     def log(self, message: str):
         if self.log_io:
