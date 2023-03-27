@@ -1,8 +1,6 @@
 from typing import Self
 
-from escp.commands.commands import T
-
-from .commands import Commands, int_to_bytes, CharacterTable
+from .commands import T, Commands, int_to_bytes, CharacterTable
 
 
 class Commands_9_Pin(Commands):

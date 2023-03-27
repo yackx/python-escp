@@ -1,9 +1,6 @@
-from escp import CharacterSetVariant
-
-from ..commands import Commands, Justification, PageLengthUnit, CharacterTable
-from ..printer import Printer
 from .common import print_and_reset
-
+from ..commands import CharacterSetVariant, Commands
+from ..printer import Printer
 
 PAGE_LENGTH_INCHES = 12
 

@@ -1,6 +1,5 @@
 import pytest
-from escp import CharacterSetVariant
-
+from src.escp import CharacterSetVariant
 from test import CommandsDefault
 
 
