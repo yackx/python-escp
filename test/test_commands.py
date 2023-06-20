@@ -141,10 +141,6 @@ def test_page_length_in_lines(commands):
     assert commands.page_length(20, PageLengthUnit.LINES).buffer == b'\x1b\x43\x14'
 
 
-def test_page_length_in_lines(commands):
-    assert commands.page_length(20, PageLengthUnit.LINES).buffer == b'\x1b\x43\x14'
-
-
 def test_page_length_in_inch(commands):
     assert commands.page_length(20, PageLengthUnit.INCHES).buffer == b'\x1bC\x00\x14'
 
