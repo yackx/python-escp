@@ -58,7 +58,7 @@ class CharacterTable(Enum):
         return f'{self.name} (d2={self.d2}, d3={self.d3})'
 
     # int value is d2 and d3 parameters in the manual
-    # d1 to be setseparately
+    # d1 to be set separately
     # [C-75]
 
     ITALIC = 0, 0
