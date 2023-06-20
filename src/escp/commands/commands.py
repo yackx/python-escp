@@ -160,16 +160,17 @@ class Commands(ABC):
         return self._append(c)
 
     def magic_text(self, content: str) -> T:
-        """Print UTF-8 text using the magic encoding.
+        """Print UTF-8 text using character set substitutions.
 
         This method will attempt to issue character set commands in order to print
         the given UTF-8 string.
 
-        For instance, if the string contains an accented character 'é', it will switch to French
-        character set (`CharacterSetVariant.FRANCE` i.e. ESC R \x01), print the character,
-        and switch back to the original character set (USA is assumed).
+        For instance, if the string contains an accented character 'é',
+        it will switch to French character set (`CharacterSetVariant.FRANCE` i.e. ESC R \x01),
+        print the character, and switch back to the original character set.
 
-        The switch occurs only if necessary, i.e. if the character is not available in the current character set.
+        The switch occurs only if necessary, i.e. if the character is not available
+        in the current character set.
 
         See `magic_encoding` for the mapping. Note that the mapping is far from complete.
 
