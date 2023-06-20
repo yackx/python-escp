@@ -14,7 +14,6 @@ magic_encoding = {
     "♢": (CharacterSetVariant.USA, b'\x04'),
     "♣︎": (CharacterSetVariant.USA, b'\x05'),
     "♧": (CharacterSetVariant.USA, b'\x05'),
-    "§": (CharacterSetVariant.USA, b'\x15'),
     "#": (CharacterSetVariant.USA, b'\x23'),
     "$": (CharacterSetVariant.USA, b'\x24'),
     "@": (CharacterSetVariant.USA, b'\x40'),
