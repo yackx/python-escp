@@ -8,6 +8,12 @@ from .printer import Printer
 
 
 class UsbPrinter(Printer):
+    """USB printer.
+
+    Known limitation: hangs on large texts.
+
+    Alternative: `lpr -o raw some_file.escp.bin`
+    """
     # Reference printer Epson LX-300+II
     # ID_VENDOR = 0x04b8
     # ID_PRODUCT = 0x0005
