@@ -3,7 +3,7 @@ from .parameters import CharacterSetVariant
 
 # International character set [R-41]
 # Very basic table, far from complete
-magic_encoding = {
+default_char_set_substitutions: dict[str, tuple[CharacterSetVariant, bytes]] = {
     "€": (CharacterSetVariant.USA, b'\xee'),  # looks similar ∊
     "☺︎": (CharacterSetVariant.USA, b'\x01'),
     "☺": (CharacterSetVariant.USA, b'\x01'),
@@ -36,4 +36,9 @@ magic_encoding = {
     "¨": (CharacterSetVariant.FRANCE, b'\x7e'),
     "©": (CharacterSetVariant.LEGAL, b'\x7b'),
     "®": (CharacterSetVariant.LEGAL, b'\x7c')
+}
+
+default_plain_char_substitutions: dict[str, bytes] = {
+    '←': b'\x1b', '↑': b'\x18', '→': b'\x1a', '↓': b'\x19',
+    '—': '-',
 }

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 from .exceptions import InvalidEncodingError
 from .parameters import Margin, PageLengthUnit, Typeface, Justification, CharacterSetVariant, CharacterTable
-from .magic_encoding import magic_encoding
+from .magic_encoding import default_plain_char_substitutions, default_char_set_substitutions
 
 
 def int_to_bytes(value: int) -> bytes:
@@ -133,11 +133,16 @@ class Commands(ABC):
 
         Make sure the string or bytes you send are compatible with the printer encoding.
 
+        This method does not attempt to alter the content to fit the printer capabilities.
+        See `magic_text` if you need support for characters that cannot be printed directly.
+
+        This method's exact behavior depends on the content type:
+        - If it is a string, it will be byte encoded using the given encoding.
+        - If it is an integer, it will be converted to a single byte: 42 -> b'\x2a'.
+        - If it is bytes, it will be added as is.
+
         :param content:
         Text to add. Can be a string, bytes or integer.
-        If it is a string, it will be encoded using the given encoding.
-        If it is an integer, it will be converted to a single byte: 42 -> b'\x2a'.
-        If it is bytes, it will be added as is.
 
         :param encoding:
         Encoding to use when converting a string to bytes.
@@ -159,11 +164,20 @@ class Commands(ABC):
             c = content
         return self._append(c)
 
-    def magic_text(self, content: str) -> T:
-        """Print UTF-8 text using character set substitutions.
+    def magic_text(
+            self,
+            content: str,
+            *,
+            character_set_substitution: dict[str, tuple[CharacterSetVariant, bytes]] = None,
+            plain_text_substitution: dict[str, bytes] = None,
+    ) -> T:
+        """Print UTF-8 text using character substitutions and character set switching.
 
         This method will attempt to issue character set commands in order to print
         the given UTF-8 string.
+
+        It will also perform character substitutions for characters that have
+        UTF-8 equivalents in the printer character set.
 
         For instance, if the string contains an accented character 'é',
         it will switch to French character set (`CharacterSetVariant.FRANCE` i.e. ESC R \x01),
@@ -172,22 +186,35 @@ class Commands(ABC):
         The switch occurs only if necessary, i.e. if the character is not available
         in the current character set.
 
-        See `magic_encoding` for the mapping. Note that the mapping is far from complete.
+        If an upward arrow '↑' is encountered, it will be replaced by b'\x18'.
 
         :param content: UTF-8 string to print.
+        :param character_set_substitution: Character set substitutions to use.
+        :param plain_text_substitution: Plain text substitutions to use.
         """
+        if not character_set_substitution:
+            character_set_substitution = default_char_set_substitutions
+        if not plain_text_substitution:
+            plain_text_substitution = default_plain_char_substitutions
+
         initial_character_set = self.current_character_set
         for c in content:
             try:
-                cs, code = magic_encoding[c]
-                if self.current_character_set.value != cs.value:
-                    self.character_set(cs)
-                self.text(code)
+                # attempt to use a character substitution, e.g. '↑' becomes b'\x18'
+                substitute = plain_text_substitution[c]
+                self._append(substitute)
             except KeyError:
-                # no magic encoding needed
-                if self.current_character_set.value != initial_character_set.value:
-                    self.character_set(initial_character_set)
-                self.text(c)
+                try:
+                    # attempt to use a magic character set
+                    character_set, code = character_set_substitution[c]
+                    if self.current_character_set.value != character_set.value:
+                        self.character_set(character_set)
+                    self.text(code)
+                except KeyError:
+                    # treat as a regular character
+                    if self.current_character_set.value != initial_character_set.value:
+                        self.character_set(initial_character_set)
+                    self.text(c)
 
         if self.current_character_set != initial_character_set:
             self.character_set(initial_character_set)
