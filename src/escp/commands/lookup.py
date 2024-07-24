@@ -8,7 +8,7 @@ def lookup_by_pins(pins) -> Commands:
     match pins:
         case 9:
             return Commands_9_Pin()
-        case 24, 48:
+        case 24 | 48:
             return Commands_24_48_Pin()
         case _:
             raise ValueError(f'Invalid number of pins: {pins}')
