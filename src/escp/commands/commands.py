@@ -74,11 +74,14 @@ class Commands(ABC):
     def draft(self, enabled: bool) -> T:
         """Change the print quality to draft or letter quality.
 
+        If true is given as argument, the draft mode is enabled. If set to false
+        (near) letter quality is used.
+
         Point sizes 10.5 and 21 only.
         LQ quality for ESC/P2 and ESC/P.
         NLQ for 9-pin printers.
         """
-        return self._append_cmd('draft', int_to_bytes(1 if enabled else 0))
+        return self._append_cmd('draft', int_to_bytes(0 if enabled else 1))
 
     @abstractmethod
     def is_valid_character_table(self, table: int) -> bool:
